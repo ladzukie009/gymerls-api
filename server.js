@@ -372,6 +372,8 @@ app.patch("/api/update-product", async (req, res) => {
   });
 });
 
-app.listen(3031, () => {
-  console.log("server running in port 3031");
+const port = 3031 || process.env.PORT;
+
+app.listen(port, () => {
+  console.log(`server running in port ${port}`);
 });
