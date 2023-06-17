@@ -6,12 +6,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// var db = mysql.createPool({
+//   connectionLimit: 10,
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "gym_management_db",
+// });
+
 var db = mysql.createPool({
   connectionLimit: 10,
-  host: "localhost" || process.env.host,
-  user: "root" || process.env.user,
-  password: "" || process.env.password,
-  database: "gym_management_db" || process.env.database,
+  host: "bjgr1jesl31jjxv5rcmu-mysql.services.clever-cloud.com",
+  user: "ucxfeyaweansk3lu",
+  password: "wUROvHozK3k8jE0nv4G6",
+  database: "bjgr1jesl31jjxv5rcmu",
 });
 
 // DATABASE CONNECTION
