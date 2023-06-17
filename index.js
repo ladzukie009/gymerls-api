@@ -22,6 +22,10 @@ db.connect((error) => {
   }
 });
 
+app.get("/", function (req, res) {
+  res.send("Hello World!");
+});
+
 // REGISTER USER
 app.post("/api/register", async (req, res) => {
   const sql =
