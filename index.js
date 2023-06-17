@@ -8,10 +8,10 @@ app.use(express.json());
 
 var db = mysql.createPool({
   connectionLimit: 10,
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "gym_management_db",
+  host: "localhost" || process.env.host,
+  user: "root" || process.env.user,
+  password: "" || process.env.password,
+  database: "gym_management_db" || process.env.database,
 });
 
 // DATABASE CONNECTION
