@@ -6,21 +6,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// DATABASE CONNECTION
-const db = mysql.createConnection({
+var db = mysql.createPool({
+  connectionLimit: 10,
   host: "localhost",
   user: "root",
   password: "",
   database: "gym_management_db",
 });
 
-db.connect((error) => {
-  if (error) {
-    console.log("error");
-  } else {
-    console.log("connected");
-  }
+db.query("SELECT 1 + 1 AS solution", function (error, results, fields) {
+  if (error) throw error;
+  console.log("The solution is: ", results[0].solution);
 });
+
+// DATABASE CONNECTION
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "gym_management_db",
+// });
+
+// db.connect((error) => {
+//   if (error) {
+//     console.log("error");
+//   } else {
+//     console.log("connected");
+//   }
+// });
 
 app.get("/", function (req, res) {
   res.send("Hello World!");
