@@ -14,11 +14,6 @@ var db = mysql.createPool({
   database: "gym_management_db",
 });
 
-db.query("SELECT 1 + 1 AS solution", function (error, results, fields) {
-  if (error) throw error;
-  console.log("The solution is: ", results[0].solution);
-});
-
 // DATABASE CONNECTION
 // const db = mysql.createConnection({
 //   host: "localhost",
