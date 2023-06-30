@@ -6,21 +6,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// var db = mysql.createPool({
-//   connectionLimit: 10,
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "gym_management_db",
-// });
-
 var db = mysql.createPool({
   connectionLimit: 10,
-  host: "bjgr1jesl31jjxv5rcmu-mysql.services.clever-cloud.com",
-  user: "ucxfeyaweansk3lu",
-  password: "wUROvHozK3k8jE0nv4G6",
-  database: "bjgr1jesl31jjxv5rcmu",
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "gym_management_db",
 });
+
+// var db = mysql.createPool({
+//   connectionLimit: 10,
+//   host: "bjgr1jesl31jjxv5rcmu-mysql.services.clever-cloud.com",
+//   user: "ucxfeyaweansk3lu",
+//   password: "wUROvHozK3k8jE0nv4G6",
+//   database: "bjgr1jesl31jjxv5rcmu",
+// });
 
 // DATABASE CONNECTION
 // const db = mysql.createConnection({
@@ -240,9 +240,11 @@ app.get("/api/roles", (req, res) => {
 // CREATE MEAL PLANNING
 app.post("/api/create-meal-planning", async (req, res) => {
   const sql =
-    "INSERT INTO meal_plan (`username`, `sun_bf_meal`, `sun_lunch_meal`, `sun_dinner_meal`, `mon_bf_meal`, `mon_lunch_meal`, `mon_dinner_meal`, `tue_bf_meal`, `tue_lunch_meal`, `tue_dinner_meal`, `wed_bf_meal`, `wed_lunch_meal`, `wed_dinner_meal`, `thurs_bf_meal`, `thurs_lunch_meal`, `thurs_dinner_meal`, `fri_bf_meal`, `fri_lunch_meal`, `fri_dinner_meal`, `sat_bf_meal`, `sat_lunch_meal`, `sat_dinner_meal`) VALUES (?)";
+    "INSERT INTO meal_plan (`username`, `diet_type`, `calories`, `sun_bf_meal`, `sun_lunch_meal`, `sun_dinner_meal`, `mon_bf_meal`, `mon_lunch_meal`, `mon_dinner_meal`, `tue_bf_meal`, `tue_lunch_meal`, `tue_dinner_meal`, `wed_bf_meal`, `wed_lunch_meal`, `wed_dinner_meal`, `thurs_bf_meal`, `thurs_lunch_meal`, `thurs_dinner_meal`, `fri_bf_meal`, `fri_lunch_meal`, `fri_dinner_meal`, `sat_bf_meal`, `sat_lunch_meal`, `sat_dinner_meal`) VALUES (?)";
   const values = [
     req.body.username,
+    req.body.diet_type,
+    req.body.calories,
     req.body.sun_bf_meal,
     req.body.sun_lunch_meal,
     req.body.sun_dinner_meal,
@@ -289,6 +291,8 @@ app.post("/api/meal-plan", (req, res) => {
 // UPDATE MEAL PLAN
 app.patch("/api/update-meal-planning", async (req, res) => {
   const sql = `UPDATE meal_plan SET 
+  diet_type = "${req.body.diet_type}",
+  calories = "${req.body.calories}",
   sun_bf_meal = "${req.body.sun_bf_meal}",
   sun_lunch_meal = "${req.body.sun_lunch_meal}",
   sun_dinner_meal = "${req.body.sun_dinner_meal}",
@@ -324,9 +328,10 @@ app.patch("/api/update-meal-planning", async (req, res) => {
 // CREATE PRODUCT
 app.post("/api/create-product", async (req, res) => {
   const sql =
-    "INSERT INTO products (`product_name`,`description`,`price`,`added_by`,`added_date`) VALUES (?)";
+    "INSERT INTO products (`product_name`,`image_url`,`description`,`price`,`added_by`,`added_date`) VALUES (?)";
   const values = [
     req.body.product_name,
+    req.body.image_url,
     req.body.description,
     req.body.price,
     req.body.added_by,
@@ -379,10 +384,74 @@ app.post("/api/get-product-by-id", (req, res) => {
 app.patch("/api/update-product", async (req, res) => {
   const sql = `UPDATE products SET 
   product_name = "${req.body.product_name}",
+  image_url = "${req.body.image_url}",
   description = "${req.body.description}",
   price = "${req.body.price}"
   WHERE id = "${req.body.id}"`;
 
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// ADD TO CART
+app.post("/api/add-to-cart", async (req, res) => {
+  const sql = `INSERT INTO cart (username, product_name, image_url, description, price, quantity, sub_total, status, added_date) VALUES (
+    '${req.body.username}',
+    '${req.body.product_name}',
+    '${req.body.image_url}',
+    '${req.body.description}',
+    '${req.body.price}',
+    '${req.body.quantity}',
+    '${req.body.sub_total}',
+    '${req.body.status}',
+    '${req.body.added_date}')`;
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// UPDATE CART
+app.patch("/api/update-cart", async (req, res) => {
+  const sql = `UPDATE cart SET 
+  quantity = "${req.body.quantity}",
+  sub_total = "${req.body.sub_total}"
+  WHERE id = "${req.body.id}"`;
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// DELETE CART
+app.patch("/api/delete-cart", async (req, res) => {
+  const sql = `DELETE FROM cart 
+  WHERE id = "${req.body.id}"`;
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// GET CART ITEM BY USERNAME
+app.post("/api/get-cart-by-id", (req, res) => {
+  const sql = `SELECT * FROM cart WHERE username = "${req.body.username}" AND status = "${req.body.status}"`;
   db.query(sql, (err, data) => {
     if (err) {
       console.log(err.message);
