@@ -461,6 +461,27 @@ app.post("/api/get-cart-by-id", (req, res) => {
   });
 });
 
+// TRANSACTION
+app.post("/api/transaction", async (req, res) => {
+  const sql = `INSERT INTO transaction (username, fullname, contact, method, address, items, total, status, transaction_date) VALUES (
+    '${req.body.username}',
+    '${req.body.fullname}',
+    '${req.body.contact}',
+    '${req.body.method}',
+    '${req.body.address}',
+    '${req.body.items}',
+    '${req.body.total}',
+    '${req.body.status}',
+    '${req.body.transaction_date}')`;
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
 const port = 3031 || process.env.PORT;
 
 app.listen(port, () => {
