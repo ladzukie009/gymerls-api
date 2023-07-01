@@ -482,6 +482,18 @@ app.post("/api/transaction", async (req, res) => {
   });
 });
 
+// GET TRANSACTION BY STATUS
+app.get("/api/get-transaction-by-status", (req, res) => {
+  const sql = `SELECT * FROM transaction WHERE status = "pending"`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
 const port = 3031 || process.env.PORT;
 
 app.listen(port, () => {
