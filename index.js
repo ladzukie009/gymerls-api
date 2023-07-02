@@ -45,11 +45,12 @@ app.get("/", function (req, res) {
 // REGISTER USER
 app.post("/api/register", async (req, res) => {
   const sql =
-    "INSERT INTO users (`name`,`username`,`role`,`password`) VALUES (?)";
+    "INSERT INTO users (`name`,`username`,`role`,`isActive`,`password`) VALUES (?)";
   const values = [
     req.body.name,
     req.body.username,
     req.body.role,
+    req.body.isActive,
     req.body.password,
   ];
 
@@ -66,6 +67,21 @@ app.post("/api/register", async (req, res) => {
 app.patch("/api/update-password", async (req, res) => {
   const sql = `UPDATE users SET 
   password = "${req.body.password}"
+  WHERE username = "${req.body.username}"`;
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// UPDATE USER - isActive
+app.patch("/api/update-user-status", async (req, res) => {
+  const sql = `UPDATE users SET 
+  isActive = "${req.body.isActive}"
   WHERE username = "${req.body.username}"`;
 
   db.query(sql, (err, data) => {
@@ -103,7 +119,7 @@ app.get("/api/users", (req, res) => {
 app.post("/api/get-user", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  const sql = `SELECT * FROM users WHERE username = ? AND password = ?`;
+  const sql = `SELECT * FROM users WHERE username = ? AND password = ? AND isActive = 1`;
   db.query(sql, [username, password], (err, data) => {
     if (err) {
       return res.json(err.message);
@@ -463,7 +479,7 @@ app.post("/api/get-cart-by-id", (req, res) => {
 
 // TRANSACTION
 app.post("/api/transaction", async (req, res) => {
-  const sql = `INSERT INTO transaction (username, fullname, contact, method, address, items, total, status, transaction_date) VALUES (
+  const sql = `INSERT INTO transaction (username, fullname, contact, method, address, items, total, status, receipt_url, transaction_date) VALUES (
     '${req.body.username}',
     '${req.body.fullname}',
     '${req.body.contact}',
@@ -472,6 +488,7 @@ app.post("/api/transaction", async (req, res) => {
     '${req.body.items}',
     '${req.body.total}',
     '${req.body.status}',
+    '${req.body.receipt_url}',
     '${req.body.transaction_date}')`;
 
   db.query(sql, (err, data) => {
@@ -484,7 +501,59 @@ app.post("/api/transaction", async (req, res) => {
 
 // GET TRANSACTION BY STATUS
 app.get("/api/get-transaction-by-status", (req, res) => {
-  const sql = `SELECT * FROM transaction WHERE status = "pending"`;
+  const sql = `SELECT * FROM transaction WHERE status = "Pending"`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// GET TRANSACTION BY USERNAME AND STATUS
+app.post("/api/get-transaction-by-username-status", (req, res) => {
+  const sql = `SELECT * FROM transaction WHERE username = "${req.body.username}" AND status = "${req.body.status}"`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// GET TRANSACTION BY USERNAME
+app.post("/api/get-transaction-by-username", (req, res) => {
+  const sql = `SELECT * FROM transaction WHERE username = "${req.body.username}"`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// GET ALL TRANSACTION
+app.get("/api/transactions", (req, res) => {
+  const sql = `SELECT * FROM transaction`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// UPDATE TRANSACTION STATUS
+app.patch("/api/update-transaction", async (req, res) => {
+  const sql = `UPDATE transaction SET 
+  status = "${req.body.status}",
+  receipt_url = "${req.body.receipt_url}"
+  WHERE id = "${req.body.id}"`;
+
   db.query(sql, (err, data) => {
     if (err) {
       console.log(err.message);
