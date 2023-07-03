@@ -6,21 +6,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// var db = mysql.createPool({
-//   connectionLimit: 10,
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "gym_management_db",
-// });
-
 var db = mysql.createPool({
   connectionLimit: 10,
-  host: "bjgr1jesl31jjxv5rcmu-mysql.services.clever-cloud.com",
-  user: "ucxfeyaweansk3lu",
-  password: "wUROvHozK3k8jE0nv4G6",
-  database: "bjgr1jesl31jjxv5rcmu",
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "gym_management_db",
 });
+
+// var db = mysql.createPool({
+//   connectionLimit: 10,
+//   host: "bjgr1jesl31jjxv5rcmu-mysql.services.clever-cloud.com",
+//   user: "ucxfeyaweansk3lu",
+//   password: "wUROvHozK3k8jE0nv4G6",
+//   database: "bjgr1jesl31jjxv5rcmu",
+// });
 
 // DATABASE CONNECTION
 // const db = mysql.createConnection({
@@ -526,6 +526,18 @@ app.post("/api/get-transaction-by-username-status", (req, res) => {
 // GET TRANSACTION BY USERNAME
 app.post("/api/get-transaction-by-username", (req, res) => {
   const sql = `SELECT * FROM transaction WHERE username = "${req.body.username}"`;
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return res.json(err.message);
+    }
+    return res.json(data);
+  });
+});
+
+// GET TRANSACTION BY ID
+app.post("/api/get-transaction-by-id", (req, res) => {
+  const sql = `SELECT * FROM transaction WHERE id = "${req.body.id}"`;
   db.query(sql, (err, data) => {
     if (err) {
       console.log(err.message);
